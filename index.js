@@ -11,7 +11,7 @@ console.log('Running Carbon at port '+port+'. Welcome to the server that powers 
 //Routing
 app.use(express.static('frontend'));
 app.get('/', function (req, res) {
-  res.sendFile(process.env.OPENSHIFT_DATA_DIR + '/frontend/index.html');
+  res.sendFile(process.env.OPENSHIFT_DATA_DIR + '/frontend/auth.html');
 });
 
 
