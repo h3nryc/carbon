@@ -27,7 +27,6 @@ function trunc(text) {
 }
 
 
-
 // Socket DB
 io.on('connection', function (socket) {
 console.log('carbon - A user has connected to the server')
@@ -40,24 +39,39 @@ console.log('carbon - A user has connected to the server')
 
     request({
       url: apiLink,
-      json: true
+      json: true,
+      //DELETE WHEN ON SERVER (SCHOOL PROBLEMS)
+      rejectUnauthorized: false
   }, function (error, response, data) {
       //Checks for err with response
-      if (!error && response.statusCode === 200) {  
-         for (var i = 0; i < 6; i++) {
-              var pre = data.response.venues[i].name;
-              var name = trunc(pre);
-              var type = data.response.venues[i].categories[0].shortName;
-              var tip = data.response.venues[i].stats.tipCount;
-              var address = data.response.venues[i].location.address;
-              var city = data.response.venues[i].location.city;
-              var vLat = data.response.venues[i].location.lat;
-              var vLong = data.response.venues[i].location.lng;
-              var verified = data.response.venues[i].verified
-              var id = data.response.venues[i].id
-              var provider = "Foursquare"
-              socket.emit('displayVenue', name,type,tip,address,city,vLat,vLong,verified,id,provider)
+      if (!error && response.statusCode === 200) { 
+      var count = 0 
+      loop(count);
+        function loop(count) {
+         if (count < 6 ) {
+          var count = count + 1
+          var id = data.response.venues[count].id         
+              getPic(id, function(link) {
+                var pre = data.response.venues[count].name;
+                var name = trunc(pre);
+                var type = data.response.venues[count].categories[0].shortName;
+                var tip = data.response.venues[count].stats.tipCount;
+                var address = data.response.venues[count].location.address;
+                var city = data.response.venues[count].location.city;
+                var vLat = data.response.venues[count].location.lat;
+                var vLong = data.response.venues[count].location.lng;
+                var verified = data.response.venues[count].verified
+
+                var provider = "Foursquare"
+                socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider)
+                loop(count);
+              });   
+         } else {
+            console.log("done")
+            return;         
          }
+        }
+
       }else{
         //Handels err
         console.log(error);
@@ -75,7 +89,9 @@ console.log('carbon - A user has connected to the server')
 
     request({
         url: eventLink,
-        json: true
+        json: true,
+        //DELETE WHEN ON SERVER (SCHOOL PROBLEMS)
+        rejectUnauthorized: false
     }, function (error, response, data) {
         //Checks for err with response
         if (!error && response.statusCode === 200) {  
@@ -112,4 +128,72 @@ console.log('carbon - A user has connected to the server')
 
   })
 
+  socket.on('getResturant', function(lat,long,type){
+    var apiLink = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+long+"&client_id="+clientId+"&client_secret="+clientSecret+"&query=Chinese%20Restaurant&limit=1&radius=5000"
+
+    request({
+        url: apiLink,
+        json: true,
+        //DELETE WHEN ON SERVER (SCHOOL PROBLEMS)
+        rejectUnauthorized: false
+    }, function (error, response, data) {
+        //Checks for err with response
+        if (!error && response.statusCode === 200) { 
+            var pre = data.response.venues[0].name;
+            var name = trunc(pre)
+            var id = data.response.venues[0].id;
+            var lat = data.response.venues[0].location.lat;
+            var long = data.response.venues[0].location.lng;
+            var address = data.response.venues[0].location.address;
+            var phone = data.response.venues[0].contact.phone;
+           
+        }else{
+          //Handels err
+          console.log(error);
+        }
+    });
+  })
+
 })
+
+
+function getPic(id,callback) {
+
+  var apiLink = "https://api.foursquare.com/v2/venues/"+id+"/photos?oauth_token=4JT2ULNSGCGNV3EAMLNAHDB3HAZ043HSDTLJLWQ3ND31W2I2&v=20160826"
+    request({
+        url: apiLink,
+        json: true,
+        //DELETE WHEN ON SERVER (SCHOOL PROBLEMS)
+        rejectUnauthorized: false
+    }, function (error, response, data) {
+        //Checks for err with response
+        if (!error && response.statusCode === 200) {
+
+          try {
+            var link = data.response.photos.items[1].prefix+'900x900'+data.response.photos.items[0].suffix;
+            callback(link);
+
+          }
+          catch(err) {
+            var link = "https://i.imgur.com/gDGiJQE.png";
+            // console.log(link)
+            callback(link);
+          }  
+        }else{
+          //Handels err
+          console.log(error);
+        }
+    });
+}
+
+
+
+
+
+
+             
+
+
+
+
+
