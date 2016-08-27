@@ -1,7 +1,7 @@
 var port = 3000
 var express = require('express');
 var app = express();
-var server = app.listen(process.env.OPENSHIFT_NODEJS_PORT || port, process.env.OPENSHIFT_NODEJS_IP || process.env.PORT);
+var server = app.listen(process.env.PORT || 8080);
 var io = require('socket.io').listen(server);
 var request = require('request');
 var clientSecret = "AV3AU1AIPBEZZMCTRZUWSVUZUZOOK00MGGI3NBHO04A4FTHH&v=20130815";
