@@ -54,7 +54,12 @@ console.log('carbon - A user has connected to the server')
               getPic(id, function(link) {
                 var pre = data.response.venues[count].name;
                 var name = trunc(pre);
-                var type = data.response.venues[count].categories[0].shortName;
+                
+                try{
+                  var type = data.response.venues[count].categories[0].shortName;
+                }catch(err){
+                  var type = "Venue"
+                }
                 var tip = data.response.venues[count].stats.tipCount;
                 var address = data.response.venues[count].location.address;
                 var city = data.response.venues[count].location.city;
