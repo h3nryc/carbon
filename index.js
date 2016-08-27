@@ -1,7 +1,7 @@
 var port = 3000
 var express = require('express');
 var app = express();
-var server = app.listen(process.env.OPENSHIFT_NODEJS_PORT || port, process.env.OPENSHIFT_NODEJS_IP);
+var server = app.listen(process.env.OPENSHIFT_NODEJS_PORT || port, process.env.OPENSHIFT_NODEJS_IP || process.env.PORT);
 var io = require('socket.io').listen(server);
 var request = require('request');
 var clientSecret = "AV3AU1AIPBEZZMCTRZUWSVUZUZOOK00MGGI3NBHO04A4FTHH&v=20130815";
@@ -48,7 +48,7 @@ console.log('carbon - A user has connected to the server')
       var count = 0 
       loop(count);
         function loop(count) {
-         if (count < 6 ) {
+         if (count < 7 ) {
           var count = count + 1
           var id = data.response.venues[count].id         
               getPic(id, function(link) {
@@ -67,7 +67,6 @@ console.log('carbon - A user has connected to the server')
                 loop(count);
               });   
          } else {
-            console.log("done")
             return;         
          }
         }

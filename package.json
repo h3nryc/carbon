@@ -1,13 +1,13 @@
 {
-  "name": "Cur",
+  "name": "Unum",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "engines": {
-    "node": "0.12.2"
+    "node": "4.5.0"
   },
   "keywords": [
     "node",
