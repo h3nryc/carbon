@@ -1,8 +1,5 @@
-var ref = new firebase("https://unum-1f4f8.firebaseio.com/users/");
-ref.once("value", function(snapshot) {
-  snapshot.forEach(function(childSnapshot) {
-    var key = childSnapshot.key();
-    console.log(key);
-    var childData = childSnapshot.val();
-  });
+var ref = new firebase("https://unum-1f4f8.firebaseio.com/");
+var usersRef = firebase.database().ref('/users/');
+usersRef.on('child_added', function(data) {
+    $('.user-card-inner').append('<div class="user-label">'+data.key+'</div>');
 });
