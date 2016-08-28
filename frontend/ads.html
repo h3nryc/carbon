@@ -22,7 +22,7 @@
 			for (var key in p) {
   				if (p.hasOwnProperty(key)) {
   					//console.log(p[key].developer);
-  						$('.ads-card-inner').append('<div onclick="changeView('+"'"+key+"')"+'"'+' class="ax-label">'+key+'</div></div><div style="width:400px;height:0;border-top:2px solid #673AB7;font-size:0;">-</div>');
+  						$('.ads-card-inner').append('<div onclick="changeView('+"'"+key+"','edit')"+'"'+' class="ax-label">'+p[key].title+'</div></div><div style="width:400px;height:0;border-top:2px solid #673AB7;font-size:0;">-</div>');
   				}
 			}
 		});
@@ -54,13 +54,13 @@
 		
 			}
 		}
-		function submitAd() {
+		function submitAd(mkey) {
 			var caption = $( "#caption" ).val();
 			var location = $( "#location" ).val();
 			var title = $( "#title" ).val();
 			var type = $( "#type" ).val();
 			var imageurl = $( "#imageurl" ).val();
-			var mkey;
+			var newp;
 			var adsRef = firebase.database().ref('/ads/');
 				adsRef.on('value', function(snapshot) {
 				$('.user-card-inner').empty();
@@ -68,14 +68,25 @@
 				var p = snapshot.val();
 				for (var key in p) {
   					if (p.hasOwnProperty(key)) {
-  						if (p[key].title == title) {
-  							mkey = key;
-  							console.log
+  						if (key == mkey) {
+  							newp = false;
+  						} else if (mkey == 'null') {
+  							newp = true;
   						}
   					}
 				}
 			});
 			console.log(mkey);
+			if (newp == true) {
+				var newAdKey = firebase.database().ref('/ads/').push().key;
+  					firebase.database().ref('/ads/'+newAdKey).update({
+    				title: title,
+    				location: location,
+    				caption: caption,
+    				type: type,
+    				imageurl: imageurl
+  				});
+			} else {
   			firebase.database().ref('/ads/' + mkey).update({
     			title: title,
     			location: location,
@@ -83,6 +94,7 @@
     			type: type,
     			imageurl: imageurl
   			});
+  		}
 		}
 		function generatePreview() {
 			var caption = $( "#caption" ).val();
@@ -92,20 +104,24 @@
 			$('.preview').empty();
 			$('.preview').append('<li style="background-color: '+type2Color()+';" class="event-card"> <div class="event-head"> <h2>🎉 Event - '+title+'</h2> </div> <div style="background-image: url('+imageurl+');" class="event-hero"></div> <div class="event-footer"> <h2>When - n/a </h2> <p>'+caption+' / '+location+'</p> </div> </li>');
 		}
-		function changeView(ogkey) {
-		var adsRef = firebase.database().ref('/ads/');
-			adsRef.on('value', function(snapshot) {
-				$('.ax-editorview').empty();
-				console.log(snapshot.val());
-				var p = snapshot.val();
-				for (var key in p) {
-  					if (p.hasOwnProperty(key)) {
-  						if (ogkey == key) {
-  							$('.ax-editorview').append('<div class="ax-editorview-text">Title: </div><input id="title" type="text" value="'+p[key].title+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Caption: </div><input id="caption" type="text" value="'+p[key].caption+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Type: </div><select class="ax-editorview-select" id="type" value="'+p[key].type+'"><option value="event">Event</option><option value="venue">Venue</option></select><br><div class="ax-editorview-text">Location: </div><input id="location" type="text" value="'+p[key].location+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Image URL: </div><input id="imageurl" type="text" value="'+p[key].imageurl+'" class="ax-editorview-input"></input><br><input value="Preview" type="button" class="ax-editorview-button" onclick="generatePreview()"></input><input style="margin-left: 5px;" value="Submit" type="button" class="ax-editorview-button" onclick="submitAd()"></input>');
-  						}
+		function changeView(ogkey, type) {
+		if (type == 'edit') {
+			var adsRef = firebase.database().ref('/ads/');
+				adsRef.on('value', function(snapshot) {
+					$('.ax-editorview').empty();
+					console.log(snapshot.val());
+					var p = snapshot.val();
+					for (var key in p) {
+  						if (p.hasOwnProperty(key)) {
+  							if (ogkey == key) {
+  								$('.ax-editorview').append('<div class="ax-editorview-text">Title: </div><input id="title" type="text" value="'+p[key].title+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Caption: </div><input id="caption" type="text" value="'+p[key].caption+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Type: </div><select class="ax-editorview-select" id="type" value="'+p[key].type+'"><option value="event">Event</option><option value="venue">Venue</option></select><br><div class="ax-editorview-text">Location: </div><input id="location" type="text" value="'+p[key].location+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Image URL: </div><input id="imageurl" type="text" value="'+p[key].imageurl+'" class="ax-editorview-input"></input><br><input value="Preview" type="button" class="ax-editorview-button" onclick="generatePreview()"></input><input style="margin-left: 5px;" value="Submit" 	type="button" class="ax-editorview-button" onclick="submitAd('+"'"+key+"'"+')"></input>');
+  							}
+  					}
   				}
-  			}
-			});
+				});
+			} else {
+				$('.ax-editorview').append('<div class="ax-editorview-text">Title: </div><input id="title" type="text" value="" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Caption: </div><input id="caption" type="text" value="" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Type: </div><select class="ax-editorview-select" id="type" value=""><option value="event">Event</option><option value="venue">Venue</option></select><br><div class="ax-editorview-text">Location: </div><input id="location" type="text" value="" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Image URL: </div><input id="imageurl" type="text" value="" class="ax-editorview-input"></input><br><input value="Preview" type="button" class="ax-editorview-button" onclick="generatePreview()"></input><input style="margin-left: 5px;" value="Submit" 	type="button" class="ax-editorview-button" onclick="submitAd('+"'null'"+')"></input>');
+			}
 		}
 		</script>
 		<link rel="stylesheet" href="./dist/remodal.css">
@@ -143,7 +159,7 @@
 		<!--<a onclick='comingSoon()' href='#modal'>lol</a>-->
 		<div class='content'>
 			<!--<div id='draggable' class='user-card'><div class='user-card-title'>Users</div><div class='user-card-push'></div><div onclick='userCardAction()' id='user-card-action' class='user-card-action'>-</div><center><div class='user-card-inner'></div></center></div>-->
-			<div class='ads-card-inner'></div><div class='mainview'><div class='mainview-title'>Ad Editor</div><div class='mainview-smalltitle'>Select an ad to edit it.</div><br><div class='ax-editorview'></div><div class='preview'></div></div>
+			<div style='display: inline-block;'><div class='ads-card-inner'></div><input onclick='changeView("null", "new")' value='Create Ad' style='display: block;' type='button' class='ax-editorview-button'></input></div><div class='mainview'><div class='mainview-title'>Ad Editor</div><div class='mainview-smalltitle'>Edit or create an ad.</div><br><div class='ax-editorview'></div><div class='preview'></div></div>
 		</div>
 		<script src="./dist/remodal.min.js"></script>
 	</body>
