@@ -63,7 +63,6 @@
 			var newp;
 			var adsRef = firebase.database().ref('/ads/');
 				adsRef.on('value', function(snapshot) {
-				$('.user-card-inner').empty();
 				console.log(snapshot.val());
 				var p = snapshot.val();
 				for (var key in p) {
