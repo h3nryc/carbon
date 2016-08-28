@@ -105,10 +105,10 @@
 			$('.preview').append('<li style="background-color: '+type2Color()+';" class="event-card"> <div class="event-head"> <h2>🎉 Event - '+title+'</h2> </div> <div style="background-image: url('+imageurl+');" class="event-hero"></div> <div class="event-footer"> <h2>When - n/a </h2> <p>'+caption+' / '+location+'</p> </div> </li>');
 		}
 		function changeView(ogkey, type) {
+		$('.ax-editorview').empty();
 		if (type == 'edit') {
 			var adsRef = firebase.database().ref('/ads/');
 				adsRef.on('value', function(snapshot) {
-					$('.ax-editorview').empty();
 					console.log(snapshot.val());
 					var p = snapshot.val();
 					for (var key in p) {
