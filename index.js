@@ -1,7 +1,7 @@
 var port = 3000
 var express = require('express');
 var app = express();
-var server = app.listen(process.env.PORT || 8080);
+var server = app.listen(process.env.PORT || 3000);
 var io = require('socket.io').listen(server);
 var request = require('request');
 var clientSecret = "AV3AU1AIPBEZZMCTRZUWSVUZUZOOK00MGGI3NBHO04A4FTHH&v=20130815";
@@ -133,7 +133,8 @@ console.log('carbon - A user has connected to the server')
   })
 
   socket.on('getResturant', function(lat,long,type){
-    var apiLink = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+long+"&client_id="+clientId+"&client_secret="+clientSecret+"&query=Chinese%20Restaurant&limit=1&radius=5000"
+    console.log(1)
+    var apiLink = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+long+"&client_id="+clientId+"&client_secret="+clientSecret+"&query="+type+"%20Restaurant&limit=1&radius=3000"
 
     request({
         url: apiLink,
@@ -143,14 +144,22 @@ console.log('carbon - A user has connected to the server')
     }, function (error, response, data) {
         //Checks for err with response
         if (!error && response.statusCode === 200) { 
-            var pre = data.response.venues[0].name;
-            var name = trunc(pre)
+          try{
             var id = data.response.venues[0].id;
-            var lat = data.response.venues[0].location.lat;
-            var long = data.response.venues[0].location.lng;
-            var address = data.response.venues[0].location.address;
-            var phone = data.response.venues[0].contact.phone;
-           
+          }catch(err){
+            socket.emit('displayRest', "fail","fail","fail","fail")
+            return;
+          }
+            
+            console.log(data.response.venues[0])
+              var pre = data.response.venues[0].name;
+              var name = trunc(pre)
+              var lat = data.response.venues[0].location.lat;
+              var long = data.response.venues[0].location.lng;
+              var address = data.response.venues[0].location.address;
+              var phone = data.response.venues[0].contact.phone;
+              socket.emit('displayRest', name,address,phone,type)
+            
         }else{
           //Handels err
           console.log(error);
