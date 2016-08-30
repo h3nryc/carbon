@@ -4,8 +4,20 @@ var app = express();
 var server = app.listen(process.env.PORT || 3000);
 var io = require('socket.io').listen(server);
 var request = require('request');
+var firebase = require("firebase");
 var clientSecret = "AV3AU1AIPBEZZMCTRZUWSVUZUZOOK00MGGI3NBHO04A4FTHH&v=20130815";
 var clientId = "YBQLVNSQZGPKCTLBYBZKTAJENWY1CVAOHBPMVNDGIFP1VE4Y";
+var gcloud = require('google-cloud')({
+  projectId: 'unum-1f4f8',
+  keyFilename: 'unum-1ef2aa9c586c.json'});
+var gcs = gcloud.storage();
+var bucket = gcs.bucket('unum-1f4f8.appspot.com');
+var fs = require('fs');
+var jsonfile = require('jsonfile');
+firebase.initializeApp({
+  serviceAccount: "unum-1ef2aa9c586c.json",
+  databaseURL: "https://unum-1f4f8.firebaseio.com"
+});
 
 console.log('Running Carbon at port '+port+'. Welcome to the server that powers unum.')
 //Routing
@@ -14,7 +26,47 @@ app.get('/', function (req, res) {
   res.sendFile(process.env.OPENSHIFT_DATA_DIR + '/frontend/auth.html');
 });
 
+function cacheManager(){
+//fistmeinthecachedaddy
+  this.updateCache = function () {
+    request.get({
+      url: "https://api.nytimes.com/svc/topstories/v2/technology.json",
+      qs: {
+        'api-key': "0b5655891e394decad545c71357c88e7"
+      },
+  }, function(err, response, json) {
+      fs.writeFile('cache.json', json,  function(err) {
+   if (err) {
+       return console.error(err);
+   } else {
+   console.log("Receiving latest json file from source");
+   console.log('Attempting to upload cache to google cloud storage...');
+  bucket.upload('cache.json', function(err, file) {
+    if (!err) {
+      console.log('Cache data uploaded successfully');
+    }
+  });
+}
+})
+  })
+  }
+  this.requestCache = function () {
+    var remoteFile = bucket.file('cache.json');
 
+    remoteFile.createReadStream()
+    .on('error', function(err) {console.log(err);})
+    .on('response', function(response) {
+     // Server connected and responded with the specified status and headers.
+     console.log('Connected to google cloud storage...');
+    })
+  .on('end', function() {
+    console.log('Cache data has been downloaded');
+  })
+  .pipe(fs.createWriteStream('cache.json'));
+  }
+}
+var cache = new cacheManager();
+cache.requestCache();
 function trunc(text) {
   var pre = text.substring(0,24);
   if (text.length >= 24) {
