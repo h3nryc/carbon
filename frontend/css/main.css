@@ -318,7 +318,6 @@ html {
 	color: #673AB7;
 }
 .ax-editorview-text {
-	font-size: 15px;
 	color: #673AB7;
 	display:inline-block;
 	font-size: 20px;
@@ -425,4 +424,51 @@ html {
 }
 .preview {
 	margin-top: 10px;
+}
+.menubutton {
+	position: absolute;
+	top: 2px;
+	left: 65%;
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.menubuttonimg {
+    display: inline;
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
+}
+.menuheader {
+	color: #673AB7;
+	position: absolute;
+	top: 6px;
+	left: 87%;
+	background-color: white;
+	border-color: white;
+	border-style: solid;
+	border-radius: 5px;
+	width: 170px; 
+	height: 52px;
+}
+.menuheadertext {
+	top: 14px;
+	left: 20px;
+	position: absolute;
+}
+.settings-title {
+	font-size: 28px;
+}
+.settings {
+	color: #673AB7;
+}
+.auth-title {
+	color: #673AB7;
+	font-size: 25px;
+}
+.auth-text {
+	color: #673AB7;
+	font-size: 20px;
 }

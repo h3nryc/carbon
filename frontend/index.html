@@ -5,6 +5,13 @@
 		<script src="web-js/jquery.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
 		<!--<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-database.js"></script>-->
+		<link rel="stylesheet" href="./dist/remodal.css">
+		<link rel="stylesheet" href="./dist/remodal-default-theme.css">
+		<script src='web-js/fx.js'></script>
+		<link href='http://fonts.googleapis.com/css?family=Open Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+		<link rel='stylesheet' href='css/main.css'>
+		<script src="web-js/jquery-ui.js"></script>
+		<script src='web-js/main.js'></script>
 		<script>
   		// Initialize Firebase
  		var config = {
@@ -14,39 +21,26 @@
     		storageBucket: "unum-1f4f8.appspot.com",
   		};
   		firebase.initializeApp(config);
-		var usersRef = firebase.database().ref('/users/');
-		usersRef.on('value', function(snapshot) {
-			$('.user-card-inner').empty();
-			console.log(snapshot.val());
-			var p = snapshot.val();
-			for (var key in p) {
-  				if (p.hasOwnProperty(key)) {
-  					console.log(p[key].developer);
-  					if (p[key].developer == true) {
-  						$('.user-card-inner').append('<div onclick="createWindow('+"'"+key+"',"+"'User: "+key+"<br>Fullname: "+p[key].fullname+"<br>Email: "+p[key].email+"')"+'"'+' class="user-label">'+key+' - <div style="display: inline-block;color: #673AB7;">dev</div></div><div style="width:400px;height:0;border-top:2px solid #673AB7;font-size:0;">-</div>');
-  					} else {
-  						$('.user-card-inner').append('<div class="user-label">'+key+'</div>');
-  					}
+  		var usersRef = firebase.database().ref('/users/');
+  		firebase.auth().onAuthStateChanged(function(user) {	console.log(user)
+  		if (user) {
+    		var usersRef = firebase.database().ref('/users/');
+			usersRef.on('value', function(snapshot) {
+				console.log(snapshot.val());
+				var p = snapshot.val();
+				for (var key in p) {
+  					if (p.hasOwnProperty(key)) {
+  						if (p[key].email == user.email) {
+  							$('.header').append('<div class="menuheader"><div class="menuheadertext">'+key+'</div><div class="menubutton"><img onclick="showMenu()" class="menubuttonimg" src="'+p[key].profilepictureurl+'" /></div></div>');
+  						}
   				}
 			}
 		});
-		</script>
-		<link rel="stylesheet" href="./dist/remodal.css">
-		<link rel="stylesheet" href="./dist/remodal-default-theme.css">
-		<script src='web-js/fx.js'></script>
-		<link href='http://fonts.googleapis.com/css?family=Open Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-		<link rel='stylesheet' href='css/main.css'>
-		<script src="web-js/jquery-ui.js"></script>
-		<script src='web-js/main.js'></script>
-		<script>
-			/*function createWindow(title, content) {
-				console.log(title, content);
-				$('.content').append("<div id='draggable_"+title+"' style='' class='window-card'><div class='window-card-title'>"+title+"</div><div class='window-card-push'></div><div onclick='"+'$(this).closest("div").remove();'+"' class='window-card-action'>-</div><center><div class='window-card-inner'>"+content+"</div></center></div>");
-   				$( "#draggable_"+title ).draggable();
-   				$( "#draggable_"+title ).draggable({
-  					containment: "parent"
-				});
-			}*/
+  		} else {
+   		window.location.replace('./auth.html');
+  		}
+  		});
+  	
 		</script>
  		<script>
   		$( function() {
