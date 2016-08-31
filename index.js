@@ -134,7 +134,7 @@ console.log('carbon - A user has connected to the server')
 
   socket.on('getResturant', function(lat,long,type){
     console.log(1)
-    var apiLink = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+long+"&client_id="+clientId+"&client_secret="+clientSecret+"&query="+type+"%20Restaurant&limit=1&radius=3000"
+    var apiLink = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+long+"&client_id="+clientId+"&client_secret="+clientSecret+"&query="+type+"%20Restaurant&limit=1&radius=4000"
 
     request({
         url: apiLink,
@@ -151,14 +151,13 @@ console.log('carbon - A user has connected to the server')
             return;
           }
             
-            console.log(data.response.venues[0])
               var pre = data.response.venues[0].name;
               var name = trunc(pre)
               var lat = data.response.venues[0].location.lat;
               var long = data.response.venues[0].location.lng;
               var address = data.response.venues[0].location.address;
               var phone = data.response.venues[0].contact.phone;
-              socket.emit('displayRest', name,address,phone,type)
+              socket.emit('displayRest', name,address,phone,type,lat,long)
             
         }else{
           //Handels err
