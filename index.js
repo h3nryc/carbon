@@ -62,11 +62,17 @@ function cacheManager(){
   .on('end', function() {
     console.log('Cache data has been downloaded');
   })
-  .pipe(fs.createWriteStream('cache.json'));
+  .on('data', function(buffer){
+    var part = buffer.read().toString();
+    string += part;
+    return string;
+  });
+  }
+  .pipe(fs.createWriteStream(''));
   }
 }
 var cache = new cacheManager();
-cache.updateCache();
+cache.requestCache();
 function trunc(text) {
   var pre = text.substring(0,24);
   if (text.length >= 24) {
