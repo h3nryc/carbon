@@ -4,7 +4,7 @@ var app = express();
 var server = app.listen(process.env.PORT || 3000);
 var io = require('socket.io').listen(server);
 var request = require('request');
-var firebase = require("firebase");
+// var firebase = require("firebase");
 var clientSecret = "AV3AU1AIPBEZZMCTRZUWSVUZUZOOK00MGGI3NBHO04A4FTHH&v=20130815";
 var clientId = "YBQLVNSQZGPKCTLBYBZKTAJENWY1CVAOHBPMVNDGIFP1VE4Y";
 // var gcloud = require('google-cloud')({
