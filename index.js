@@ -97,28 +97,30 @@ console.log('carbon - A user has connected to the server')
   }, function (error, response, data) {
       //Checks for err with response
       if (!error && response.statusCode === 200) { 
-        for(var count = 0; count < 7; count++) {
-          console.log(count)
-          var id = data.response.venues[count].id         
-          getPic(id, function(link) {
-            var pre = data.response.venues[count].name;
-            var name = trunc(pre);
-            
-            try{
+        var count = 0;
+        loop(count)
+        function loop(count) {
+          if (count < 6) {
+            var count = count + 1
+            var id = data.response.venues[count].id 
+            getPic(id, function(link) {
+              var pre = data.response.venues[count].name;
+              var name = trunc(pre);
               var type = data.response.venues[count].categories[0].shortName;
-            } catch(err){
-              var type = "Venue"
-            }
-            var tip = data.response.venues[count].stats.tipCount;
-            var address = data.response.venues[count].location.address;
-            var city = data.response.venues[count].location.city;
-            var vLat = data.response.venues[count].location.lat;
-            var vLong = data.response.venues[count].location.lng;
-            var verified = data.response.venues[count].verified
+              var tip = data.response.venues[count].stats.tipCount;
+              var address = data.response.venues[count].location.address;
+              var city = data.response.venues[count].location.city;
+              var vLat = data.response.venues[count].location.lat;
+              var vLong = data.response.venues[count].location.lng;
+              var verified = data.response.venues[count].verified
 
-            var provider = "Foursquare"
-            socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider)
-          });
+              var provider = "Foursquare"
+               socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider)
+              loop(count);
+              });   
+          } else {
+            return;
+          }
         }
       } else{
         //Handels err
