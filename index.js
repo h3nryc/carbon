@@ -66,16 +66,16 @@ app.get('/', function (req, res) {
 // }
 // var cache = new cacheManager();
 // cache.updateCache();
-// function trunc(text) {
-//   var pre = text.substring(0,24);
-//   if (text.length >= 24) {
-//     var final = pre+"...";
-//     return final;
-//   } else {
-//     return pre;
-//   }
+function trunc(text) {
+  var pre = text.substring(0,24);
+  if (text.length >= 24) {
+    var final = pre+"...";
+    return final;
+  } else {
+    return pre;
+  }
 
-// }
+}
 
 
 // Socket DB
