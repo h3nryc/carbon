@@ -66,7 +66,6 @@ app.get('/', function (req, res) {
 // }
 // var cache = new cacheManager();
 // cache.updateCache();
->>>>>>> origin/master
 function trunc(text) {
   var pre = text.substring(0,24);
   if (text.length >= 24) {
