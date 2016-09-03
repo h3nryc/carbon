@@ -50,12 +50,16 @@ function cacheManager(){
             if (p.hasOwnProperty(key)) {
               if (key == 'main') {
                 return p[key];
+                vcache_expire = Date.now() += 240 * 60;
               }
           }
     }
   })
   }
   this.requestVCache = function () {
+    if (Date.now() > vcache_expire) {
+      vcache = cache.requestCache();
+    }
     if (vcache == undefined) {
       vcache = cache.requestCache();
     } else {
