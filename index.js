@@ -8,6 +8,7 @@ var firebase = require("firebase");
 var clientSecret = "AV3AU1AIPBEZZMCTRZUWSVUZUZOOK00MGGI3NBHO04A4FTHH&v=20130815";
 var clientId = "YBQLVNSQZGPKCTLBYBZKTAJENWY1CVAOHBPMVNDGIFP1VE4Y";
 var vcache;
+var vcache_expire;
 firebase.initializeApp({
   serviceAccount: "unum-b23625c915ea.json",
   databaseURL: "https://unum-1f4f8.firebaseio.com"
@@ -55,10 +56,11 @@ function cacheManager(){
   })
   }
   this.requestVCache = function () {
-    if (vcache == 'undefined') {
+    if (vcache == undefined) {
       vcache = cache.requestCache();
     } else {
       return vcache;
+      console.log(vcache);
     }
   }
 }
