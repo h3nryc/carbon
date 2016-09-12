@@ -24,7 +24,7 @@ app.get('/', function (req, res) {
 function cacheManager(){
   this.updateCache = function () {
     request.get({
-      url: "https://api.nytimes.com/svc/topstories/v2/technology.json",
+      url: "https://api.nytimes.com/svc/topstories/v2/home.json",
       qs: {
         'api-key': "0b5655891e394decad545c71357c88e7"
       },
@@ -44,7 +44,6 @@ function cacheManager(){
   this.requestCache = function () {
     var cacheRef = firebase.database().ref('/cache/');
       cacheRef.on('value', function(snapshot) {
-        console.log(snapshot.val());
         var p = snapshot.val();
         for (var key in p) {
             if (p.hasOwnProperty(key)) {
@@ -63,14 +62,13 @@ function cacheManager(){
     if (vcache == undefined) {
       vcache = cache.requestCache();
     } else {
+      console.log(vcache)
       return vcache;
-      console.log(vcache);
     }
   }
 }
 var cache = new cacheManager();
-cache.updateCache();
-cache.requestVCache();
+
 
 function trunc(text) {
   var pre = text.substring(0,24);
@@ -83,6 +81,58 @@ function trunc(text) {
 
 }
 
+function type2Emoji(type) {
+	if(type == "Beach"){
+		return "🏖";
+	}else if (type == "Park"){
+		return "🌲";
+	}else if (type == "Playground"){
+		return "⛳️";
+	}else if (type == "Food & Drink"){
+		return "🍴";
+	}else if(type == "Preserve"){
+		return "🍀";
+	}else if(type == "Historic Site"){
+		return "👴";
+	}else if (type == "Pool"){
+		return "🌊";
+	}else if (type == "Café"){
+		return "☕️";
+	}
+	else{
+		return "🚶";
+	}
+}
+
+
+function type2Color(type) {
+	if(type == "Beach" || type == 1){
+		return "#f1c40f";
+	}else if (type == "Park" || type == 2){
+		return "#2ecc71";
+	}else if (type == "Playground" || type == 3){
+		return "#e74c3c";
+	}else if (type == "Food & Drink" || type == 4){
+		return "#e67e22";
+	}else if(type == "Preserve"){
+		return "#EF2D56";
+	}else if (type == "Historic Site" || type == "Café" || type == 5){
+		return '#ED7D3A';
+	}else if (type == "Pool" || type == 6){
+		return "#5BC0EB";
+	}
+	else{
+		var rand = Math.floor(Math.random() * 3) + 1
+		if (rand == 1) {
+			return "#03FCBA";
+		} else if (rand == 2) {
+			return "#01FDF6";
+		}else if (rand == 3){
+			return "#CBBAED";
+		}
+
+	}
+}
 
 // Socket DB
 io.on('connection', function (socket) {
@@ -101,13 +151,13 @@ console.log('carbon - A user has connected to the server')
       rejectUnauthorized: false
   }, function (error, response, data) {
       //Checks for err with response
-      if (!error && response.statusCode === 200) { 
+      if (!error && response.statusCode === 200) {
         var count = 0;
         loop(count)
         function loop(count) {
           if (count < 6) {
             var count = count + 1
-            var id = data.response.venues[count].id 
+            var id = data.response.venues[count].id
             getPic(id, function(link) {
               var pre = data.response.venues[count].name;
               var name = trunc(pre);
@@ -116,7 +166,7 @@ console.log('carbon - A user has connected to the server')
               }catch(err){
               	var type = "Venue"
               }
-              
+
               var tip = data.response.venues[count].stats.tipCount;
               var address = data.response.venues[count].location.address;
               var city = data.response.venues[count].location.city;
@@ -125,9 +175,10 @@ console.log('carbon - A user has connected to the server')
               var verified = data.response.venues[count].verified
 
               var provider = "Foursquare"
-               socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider)
+              //  socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider,count)
+               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+' - '+tip+' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
               loop(count);
-              });   
+              });
           } else {
             return;
           }
@@ -154,12 +205,12 @@ console.log('carbon - A user has connected to the server')
         rejectUnauthorized: false
     }, function (error, response, data) {
         //Checks for err with response
-        if (!error && response.statusCode === 200) {  
+        if (!error && response.statusCode === 200) {
            for (var i = 0; i < 6; i++) {
               var pre = data.events.event[i].title;
               var name = trunc(pre);
               var lat = data.events.event[i].latitude;
-              var long = data.events.event[i].longitude;    
+              var long = data.events.event[i].longitude;
           try {
             var preImg = data.events.event[i].image.medium.url;
             var image = preImg.replace(/^http:\/\//i, 'https://');
@@ -167,7 +218,7 @@ console.log('carbon - A user has connected to the server')
           }
           catch(err) {
             var image = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRzbjllLfcybGqvOmehP2qaxFPAs5IXz5XLolnAfu_CuXh5eFLoevIxsTuh"
-          }  
+          }
               var venueName = data.events.event[i].venue_name;
               var venueAddress = data.events.event[i].venue_address;
               var startTime = data.events.event[i].start_time;
@@ -177,7 +228,7 @@ console.log('carbon - A user has connected to the server')
               var provider = "Eventful"
               var emoji = "🎉";
               var rand = Math.floor(Math.random() * 7) + 1
-              socket.emit('displayEvent', name,lat,long,id,provider,rand,emoji,eventfulUrl,startTime,venueAddress,venueName,cityName,image)
+              socket.emit('displayEvent', ' <li onclick="loadMore('+"'"+name+"'"+','+lat+','+long+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+venueAddress+"'"+','+"'"+emoji+"'"+','+"'"+type2Color(rand)+"'"+')" style="background-color: '+type2Color(rand)+';" class="event-card"> <div class="event-head"> <h2>🎉 Event - '+name+'</h2> </div> <div style="background-image: url('+image+');" class="event-hero"></div> <div class="event-footer"> <h2>When - '+startTime+'</h2> <p>'+venueName+' / '+venueAddress+'</p> </div> </li>')
            }
         }else{
           //Handels err
@@ -199,14 +250,14 @@ console.log('carbon - A user has connected to the server')
         rejectUnauthorized: false
     }, function (error, response, data) {
         //Checks for err with response
-        if (!error && response.statusCode === 200) { 
+        if (!error && response.statusCode === 200) {
           try{
             var id = data.response.venues[0].id;
           }catch(err){
             socket.emit('displayRest', "fail","fail","fail","fail")
             return;
           }
-            
+
               var pre = data.response.venues[0].name;
               var name = trunc(pre)
               var lat = data.response.venues[0].location.lat;
@@ -214,7 +265,7 @@ console.log('carbon - A user has connected to the server')
               var address = data.response.venues[0].location.address;
               var phone = data.response.venues[0].contact.phone;
               socket.emit('displayRest', name,address,phone,type,lat,long)
-            
+
         }else{
           //Handels err
           console.log(error);
@@ -246,22 +297,10 @@ function getPic(id,callback) {
             var link = "https://i.imgur.com/gDGiJQE.png";
             // console.log(link)
             callback(link);
-          }  
+          }
         }else{
           //Handels err
           console.log(error);
         }
     });
 }
-
-
-
-
-
-
-             
-
-
-
-
-
