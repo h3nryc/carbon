@@ -72,11 +72,12 @@ var cache = new cacheManager();
 
 function trunc(text) {
   var pre = text.substring(0,24);
+  var pre2 = pre.replace(/^F0+/i, '');
   if (text.length >= 24) {
-    var final = pre+"...";
+    var final = pre2+"...";
     return final;
   } else {
-    return pre;
+    return pre2;
   }
 
 }
@@ -133,7 +134,6 @@ function type2Color(type) {
 
 	}
 }
-
 // Socket DB
 io.on('connection', function (socket) {
 console.log('carbon - A user has connected to the server')
@@ -173,10 +173,14 @@ console.log('carbon - A user has connected to the server')
               var vLat = data.response.venues[count].location.lat;
               var vLong = data.response.venues[count].location.lng;
               var verified = data.response.venues[count].verified
-
+              if (address == null || address == undefined) {
+                var addressDis = "none"
+              }else {
+                var addressDis = "block"
+              }
               var provider = "Foursquare"
               //  socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider,count)
-               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+' - '+tip+' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
+               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+' - '+tip+' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;display: '+addressDis+'">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
               loop(count);
               });
           } else {
@@ -195,7 +199,7 @@ console.log('carbon - A user has connected to the server')
 
   socket.on('getEvent', function (lat,long){
     var eventKey = "HJRp25zS5jm5NJQr"
-    var eventLink = "https://api.eventful.com/json/events/search?app_key="+eventKey+"&where="+lat+","+long+"&within=25&units=km&sort_order=popularity"
+    var eventLink = "https://api.eventful.com/json/events/search?app_key="+eventKey+"&where="+lat+","+long+"&within=25&units=km&sort_order=popularity&image_sizes=large"
 
 
     request({
@@ -212,7 +216,7 @@ console.log('carbon - A user has connected to the server')
               var lat = data.events.event[i].latitude;
               var long = data.events.event[i].longitude;
           try {
-            var preImg = data.events.event[i].image.medium.url;
+            var preImg = data.events.event[i].image.large.url;
             var image = preImg.replace(/^http:\/\//i, 'https://');
 
           }
