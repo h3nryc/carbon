@@ -277,6 +277,41 @@ console.log('carbon - A user has connected to the server')
     });
   })
 
+  socket.on('getNews', function(topic){
+    request.get({
+      url: "https://api.nytimes.com/svc/topstories/v2/home.json",
+      rejectUnauthorized: false,
+      qs: {
+        'api-key': "0b5655891e394decad545c71357c88e7"
+      },
+    }, function(err, response, body) {
+       body = JSON.parse(body);
+         var count = 0;
+         loop(count)
+         function loop(count) {
+           if (count < 6) {
+             var count = count + 1
+             var title = body.results[count].title;
+             var url = body.results[count].url;
+             try{
+               var image = body.results[count].multimedia[3].url;
+               var caption = body.results[count].multimedia[3].caption;
+             }catch(err){
+               var image = "https://i.imgur.com/gDGiJQE.png"
+               var caption = "No Caption."
+             }
+
+             var abstract = body.results[count].abstract;
+             var rand = Math.floor(Math.random() * 7) + 1
+             console.log(caption);
+             socket.emit('displayNews', ' <li style="background-color: '+type2Color(rand)+';" class="news-card"> <div class="event-head"> <h2>📰  '+title+'</h2> </div> <div style="background-image: url('+image+');" class="event-hero"></div> <div class="event-footer"> <h3>'+caption+'</h3> <p>'+abstract+' <p>Read more..</p> </div> </li>')
+             loop(count)
+           } else {
+             return;
+           }
+         }
+      })
+  })
 })
 
 
