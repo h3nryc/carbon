@@ -172,15 +172,17 @@ console.log('carbon - A user has connected to the server')
               var city = data.response.venues[count].location.city;
               var vLat = data.response.venues[count].location.lat;
               var vLong = data.response.venues[count].location.lng;
+              var phone = data.response.venues[0].contact.phone;
               var verified = data.response.venues[count].verified
               if (address == null || address == undefined) {
                 var addressDis = "none"
+                var address = "No address found."
               }else {
                 var addressDis = "block"
               }
               var provider = "Foursquare"
               //  socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider,count)
-               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+' - '+tip+' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;display: '+addressDis+'">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
+               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+phone+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+' - '+tip+' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;display: '+addressDis+'">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
               loop(count);
               });
           } else {
@@ -230,9 +232,10 @@ console.log('carbon - A user has connected to the server')
               var eventfulUrl = data.events.event[i].url;
               var cityName = data.events.event[i].city_name;
               var provider = "Eventful"
+              var url = data.events.event[i].url;
               var emoji = "🎉";
               var rand = Math.floor(Math.random() * 7) + 1
-              socket.emit('displayEvent', ' <li onclick="loadMore('+"'"+name+"'"+','+lat+','+long+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+venueAddress+"'"+','+"'"+emoji+"'"+','+"'"+type2Color(rand)+"'"+')" style="background-color: '+type2Color(rand)+';" class="event-card"> <div class="event-head"> <h2>🎉 Event - '+name+'</h2> </div> <div style="background-image: url('+image+');" class="event-hero"></div> <div class="event-footer"> <h2>When - '+startTime+'</h2> <p>'+venueName+' / '+venueAddress+'</p> </div> </li>')
+              socket.emit('displayEvent', ' <li onclick="loadMore('+"'"+name+"'"+','+lat+','+long+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+venueAddress+"'"+','+"'"+emoji+"'"+','+"'"+type2Color(rand)+"'"+','+"'"+url+"'"+')" style="background-color: '+type2Color(rand)+';" class="event-card"> <div class="event-head"> <h2>🎉 Event - '+name+'</h2> </div> <div style="background-image: url('+image+');" class="event-hero"></div> <div class="event-footer"> <h2>When - '+startTime+'</h2> <p>'+venueName+' / '+venueAddress+'</p> </div> </li>')
            }
         }else{
           //Handels err
@@ -244,7 +247,6 @@ console.log('carbon - A user has connected to the server')
   })
 
   socket.on('getResturant', function(lat,long,type){
-    console.log(1)
     var apiLink = "https://api.foursquare.com/v2/venues/search?ll="+lat+","+long+"&client_id="+clientId+"&client_secret="+clientSecret+"&query="+type+"%20Restaurant&limit=1&radius=4000"
 
     request({
@@ -303,7 +305,6 @@ console.log('carbon - A user has connected to the server')
 
              var abstract = body.results[count].abstract;
              var rand = Math.floor(Math.random() * 7) + 1
-             console.log(caption);
              socket.emit('displayNews', ' <li style="background-color: '+type2Color(rand)+';" class="news-card"> <div class="event-head"> <h2>📰  '+title+'</h2> </div> <div style="background-image: url('+image+');" class="event-hero"></div> <div class="event-footer"> <h3>'+caption+'</h3> <p>'+abstract+' <p>Read more..</p> </div> </li>')
              loop(count)
            } else {
