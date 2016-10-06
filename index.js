@@ -182,7 +182,7 @@ console.log('carbon - A user has connected to the server')
               }
               var provider = "Foursquare"
               //  socket.emit('displayVenue', link,name,type,tip,address,city,vLat,vLong,verified,id,provider,count)
-               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+phone+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+' - '+tip+' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;display: '+addressDis+'">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
+               socket.emit('displayVenue', ' <li onclick="loadMore('+"'"+type+"'"+','+vLat+','+vLong+','+"'"+id+"'"+','+"'"+provider+"'"+','+"'"+name+"'"+','+"'"+address+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+type2Emoji(type)+"'"+','+"'"+phone+"'"+')" style="background-color: '+type2Color(type)+';"class="food-card"> <div class="food-head"> <h2>'+type2Emoji(type)+'  '+type+'' tips</h2> </div> <div style="background-image: url('+link+');" class="food-hero"></div> <div class="food-footer"> <h2>'+name+'</h2> <p style="margin: 0;display: '+addressDis+'">This '+type+' is located on '+address+' '+city+'</p> </div> </li>')
               loop(count);
               });
           } else {
