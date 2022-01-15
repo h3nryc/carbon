@@ -1,0 +1,184 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>unum - dashboard</title>
+		<script src="web-js/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+		<!--<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-database.js"></script>-->
+		<script>
+  		// Initialize Firebase
+ 		var config = {
+    		apiKey: "AIzaSyDBB4Em1HPRxQolwHEqsLWu1kKchNSYaNg",
+    		authDomain: "unum-1f4f8.firebaseapp.com",
+    		databaseURL: "https://unum-1f4f8.firebaseio.com",
+    		storageBucket: "unum-1f4f8.appspot.com",
+  		};
+  		firebase.initializeApp(config);
+  		var usersRef = firebase.database().ref('/users/');
+  		firebase.auth().onAuthStateChanged(function(user) {	console.log(user)
+  		if (user) {
+    		var usersRef = firebase.database().ref('/users/');
+			usersRef.on('value', function(snapshot) {
+				console.log(snapshot.val());
+				var p = snapshot.val();
+				for (var key in p) {
+  					if (p.hasOwnProperty(key)) {
+  						if (p[key].email == user.email) {
+  							$('.header').append('<div class="menuheader"><div class="menuheadertext">'+key+'</div><div class="menubutton"><img onclick="showMenu()" class="menubuttonimg" src="'+p[key].profilepictureurl+'" /></div></div>');
+  						}
+  				}
+			}
+		});
+  		} else {
+   		window.location.replace('./auth.html');
+  		}
+  		});
+		var adsRef = firebase.database().ref('/ads/');
+		adsRef.on('value', function(snapshot) {
+			$('.ads-card-inner').empty();
+			console.log(snapshot.val());
+			var p = snapshot.val();
+			for (var key in p) {
+  				if (p.hasOwnProperty(key)) {
+  					//console.log(p[key].developer);
+  						$('.ads-card-inner').append('<div onclick="changeView('+"'"+key+"','edit')"+'"'+' class="ax-label">'+p[key].title+'</div></div><div style="width:400px;height:0;border-top:2px solid #673AB7;font-size:0;">-</div>');
+  				}
+			}
+		});
+		function type2Color(type) {
+		if(type == "Beach" || type == 1){
+			return "#f1c40f";
+		}else if (type == "Park" || type == 2){
+			return "#2ecc71";
+		}else if (type == "Playground" || type == 3){
+			return "#e74c3c";
+		}else if (type == "Food & Drink" || type == 4){
+			return "#e67e22";
+		}else if(type == "Preserve"){
+			return "#EF2D56";
+		}else if (type == "Historic Site" || type == "Café" || type == 5){
+			return '#ED7D3A';
+		}else if (type == "Pool" || type == 6){
+			return "#5BC0EB";
+		}
+		else{
+			var rand = Math.floor(Math.random() * 3) + 1  
+			if (rand == 1) {
+				return "#03FCBA";
+			} else if (rand == 2) {
+				return "#01FDF6";
+			} else if (rand == 3){
+				return "#CBBAED";
+			}
+		
+			}
+		}
+		function submitAd(mkey) {
+			var caption = $( "#caption" ).val();
+			var location = $( "#location" ).val();
+			var title = $( "#title" ).val();
+			var type = $( "#type" ).val();
+			var imageurl = $( "#imageurl" ).val();
+			var newp;
+			var adsRef = firebase.database().ref('/ads/');
+				adsRef.on('value', function(snapshot) {
+				console.log(snapshot.val());
+				var p = snapshot.val();
+				for (var key in p) {
+  					if (p.hasOwnProperty(key)) {
+  						if (key == mkey) {
+  							newp = false;
+  						} else if (mkey == 'null') {
+  							newp = true;
+  						}
+  					}
+				}
+			});
+			console.log(mkey);
+			if (newp == true) {
+				var newAdKey = firebase.database().ref('/ads/').push().key;
+  					firebase.database().ref('/ads/'+newAdKey).update({
+    				title: title,
+    				location: location,
+    				caption: caption,
+    				type: type,
+    				imageurl: imageurl
+  				});
+			} else {
+  			firebase.database().ref('/ads/' + mkey).update({
+    			title: title,
+    			location: location,
+    			caption: caption,
+    			type: type,
+    			imageurl: imageurl
+  			});
+  		}
+		}
+		function generatePreview() {
+			var caption = $( "#caption" ).val();
+			var location = $( "#location" ).val();
+			var title = $( "#title" ).val();
+			var imageurl = $( "#imageurl" ).val();
+			$('.preview').empty();
+			$('.preview').append('<li style="background-color: '+type2Color()+';" class="event-card"> <div class="event-head"> <h2>🎉 Event - '+title+'</h2> </div> <div style="background-image: url('+imageurl+');" class="event-hero"></div> <div class="event-footer"> <h2>When - n/a </h2> <p>'+caption+' / '+location+'</p> </div> </li>');
+		}
+		function changeView(ogkey, type) {
+		$('.ax-editorview').empty();
+		if (type == 'edit') {
+			var adsRef = firebase.database().ref('/ads/');
+				adsRef.on('value', function(snapshot) {
+					console.log(snapshot.val());
+					var p = snapshot.val();
+					for (var key in p) {
+  						if (p.hasOwnProperty(key)) {
+  							if (ogkey == key) {
+  								$('.ax-editorview').append('<div class="ax-editorview-text">Title: </div><input id="title" type="text" value="'+p[key].title+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Caption: </div><input id="caption" type="text" value="'+p[key].caption+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Type: </div><select class="ax-editorview-select" id="type" value="'+p[key].type+'"><option value="event">Event</option><option value="venue">Venue</option></select><br><div class="ax-editorview-text">Location: </div><input id="location" type="text" value="'+p[key].location+'" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Image URL: </div><input id="imageurl" type="text" value="'+p[key].imageurl+'" class="ax-editorview-input"></input><br><input value="Preview" type="button" class="ax-editorview-button" onclick="generatePreview()"></input><input style="margin-left: 5px;" value="Submit" 	type="button" class="ax-editorview-button" onclick="submitAd('+"'"+key+"'"+')"></input>');
+  							}
+  					}
+  				}
+				});
+			} else {
+				$('.ax-editorview').append('<div class="ax-editorview-text">Title: </div><input id="title" type="text" value="" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Caption: </div><input id="caption" type="text" value="" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Type: </div><select class="ax-editorview-select" id="type" value=""><option value="event">Event</option><option value="venue">Venue</option></select><br><div class="ax-editorview-text">Location: </div><input id="location" type="text" value="" class="ax-editorview-input"></input><br><div class="ax-editorview-text">Image URL: </div><input id="imageurl" type="text" value="" class="ax-editorview-input"></input><br><input value="Preview" type="button" class="ax-editorview-button" onclick="generatePreview()"></input><input style="margin-left: 5px;" value="Submit" 	type="button" class="ax-editorview-button" onclick="submitAd('+"'null'"+')"></input>');
+			}
+		}
+		</script>
+		<link rel="stylesheet" href="./dist/remodal.css">
+		<link rel="stylesheet" href="./dist/remodal-default-theme.css">
+		<script src='web-js/fx.js'></script>
+		<link href='http://fonts.googleapis.com/css?family=Open Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+		<link rel='stylesheet' href='css/main.css'>
+		<script src="web-js/jquery-ui.js"></script>
+		<script src='web-js/main.js'></script>
+		<script>
+		</script>
+ 		<script>
+  		$( function() {
+   			$( "#draggable" ).draggable();
+   			$( "#draggable" ).draggable({
+  				containment: "parent"
+			});
+  		} );
+  </script>
+	</head>
+	<body onload='pageEffect()'>
+		<div class="remodal" data-remodal-id="modal">
+  <button data-remodal-action="close" class="remodal-close"></button>
+  <h1>Dialog</h1>
+  <p>
+    Dialoggy stuff in here!
+  </p>
+  <br>
+  <button data-remodal-action="cancel" class="remodal-cancel">Cancel</button>
+  <button data-remodal-action="confirm" class="remodal-external-link">Okay</button>
+</div>
+		<div class='header'>
+			<a href='/index.html'><div class='headertext1'>unum<div class='headertext2'>dashboard</div></div></a> <!--<div class='headertext-divider'></div>--><a href='/users.html'><div class='headertext-users'>users</div><!--<div class='headertext-divider' style='left: 33.5%'></div>--><a href='#'><div class='headertext-ads headertext-selected'>ads</div></a>
+		</div>
+		<!--<a onclick='comingSoon()' href='#modal'>lol</a>-->
+		<div class='content'>
+			<!--<div id='draggable' class='user-card'><div class='user-card-title'>Users</div><div class='user-card-push'></div><div onclick='userCardAction()' id='user-card-action' class='user-card-action'>-</div><center><div class='user-card-inner'></div></center></div>-->
+			<div style='display: inline-block;'><div class='ads-card-inner'></div><input onclick='changeView("null", "new")' value='Create Ad' style='display: block;' type='button' class='ax-editorview-button'></input></div><div class='mainview'><div class='mainview-title'>Ad Editor</div><div class='mainview-smalltitle'>Edit or create an ad.</div><br><div class='ax-editorview'></div><div class='preview'></div></div>
+		</div>
+		<script src="./dist/remodal.min.js"></script>
+	</body>
+</html>

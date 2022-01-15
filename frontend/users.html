@@ -1,0 +1,91 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>unum - dashboard</title>
+		<script src="web-js/jquery.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+		<!--<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase-database.js"></script>-->
+		<script>
+  		// Initialize Firebase
+ 		var config = {
+    		apiKey: "AIzaSyDBB4Em1HPRxQolwHEqsLWu1kKchNSYaNg",
+    		authDomain: "unum-1f4f8.firebaseapp.com",
+    		databaseURL: "https://unum-1f4f8.firebaseio.com",
+    		storageBucket: "unum-1f4f8.appspot.com",
+  		};
+  		firebase.initializeApp(config);
+  		var usersRef = firebase.database().ref('/users/');
+  		firebase.auth().onAuthStateChanged(function(user) {	console.log(user)
+  		if (user) {
+    		var usersRef = firebase.database().ref('/users/');
+			usersRef.on('value', function(snapshot) {
+				console.log(snapshot.val());
+				var p = snapshot.val();
+				for (var key in p) {
+  					if (p.hasOwnProperty(key)) {
+  						if (p[key].email == user.email) {
+  							$('.header').append('<div class="menuheader"><div class="menuheadertext">'+key+'</div><div class="menubutton"><img onclick="showMenu()" class="menubuttonimg" src="'+p[key].profilepictureurl+'" /></div></div>');
+  						}
+  				}
+			}
+		});
+  		} else {
+   		window.location.replace('./auth.html');
+  		}
+  		});
+  	
+		usersRef.on('value', function(snapshot) {
+			$('.user-card-inner').empty();
+			console.log(snapshot.val());
+			var p = snapshot.val();
+			for (var key in p) {
+  				if (p.hasOwnProperty(key)) {
+  					console.log(p[key].developer);
+  					if (p[key].developer == true) {
+  						$('.user-card-inner').append('<div onclick="createWindow('+"'"+key+"',"+"'User: "+key+"<br>Fullname: "+p[key].fullname+"<br>Email: "+p[key].email+"')"+'"'+' class="user-label">'+key+' - dev</div></div><div style="width:400px;height:0;border-top:2px solid #673AB7;font-size:0;">-</div>');
+  					} else {
+  						$('.user-card-inner').append('<div class="user-label">'+key+'</div>');
+  					}
+  				}
+			}
+		});
+		</script>
+		<link rel="stylesheet" href="./dist/remodal.css">
+		<link rel="stylesheet" href="./dist/remodal-default-theme.css">
+		<script src='web-js/fx.js'></script>
+		<link href='http://fonts.googleapis.com/css?family=Open Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+		<link rel='stylesheet' href='css/main.css'>
+		<script src="web-js/jquery-ui.js"></script>
+		<script src='web-js/main.js'></script>
+		<script>
+		</script>
+ 		<script>
+  		$( function() {
+   			$( "#draggable" ).draggable();
+   			$( "#draggable" ).draggable({
+  				containment: "parent"
+			});
+  		} );
+  </script>
+	</head>
+	<body onload='pageEffect()'>
+		<div class="remodal" data-remodal-id="modal">
+  <button data-remodal-action="close" class="remodal-close"></button>
+  <h1>Dialog</h1>
+  <p>
+    Dialoggy stuff in here!
+  </p>
+  <br>
+  <button data-remodal-action="cancel" class="remodal-cancel">Cancel</button>
+  <button data-remodal-action="confirm" class="remodal-external-link">Okay</button>
+</div>
+		<div class='header'>
+			<a href='/index.html'><div class='headertext1'>unum<div class='headertext2'>dashboard</div></div></a> <!--<div class='headertext-divider'></div>--><a href='#'><div class='headertext-users headertext-selected'>users</div><!--<div class='headertext-divider' style='left: 33.5%'></div>--><a href='/ads.html'><div class='headertext-ads'>ads</div></a>
+		<!--<a onclick='comingSoon()' href='#modal'>lol</a>-->
+		<div class='content'>
+			<!--<div id='draggable' class='user-card'><div class='user-card-title'>Users</div><div class='user-card-push'></div><div onclick='userCardAction()' id='user-card-action' class='user-card-action'>-</div><center><div class='user-card-inner'></div></center></div>-->
+			<div class='user-card-inner'></div>
+		</div>
+		<script src="./dist/remodal.min.js"></script>
+	</body>
+</html>

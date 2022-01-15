@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>unum - dashboard</title>
+		<script src="web-js/jquery.min.js"></script>
+		<link rel="stylesheet" href="./dist/remodal.css">
+		<link rel="stylesheet" href="./dist/remodal-default-theme.css">
+		<script src='web-js/fx.js'></script>
+		<link href='http://fonts.googleapis.com/css?family=Open Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+		<link rel='stylesheet' href='css/main.css'>
+		<script src="web-js/jquery-ui.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+		<script>
+		var config = {
+    		apiKey: "AIzaSyDBB4Em1HPRxQolwHEqsLWu1kKchNSYaNg",
+    		authDomain: "unum-1f4f8.firebaseapp.com",
+    		databaseURL: "https://unum-1f4f8.firebaseio.com",
+    		storageBucket: "unum-1f4f8.appspot.com",
+  		};
+  		firebase.initializeApp(config);
+  		function login() {
+  			firebase.auth().signInWithEmailAndPassword($('#email').val(), $('#password').val()).catch(function(error) {
+  			// Handle Errors here.
+  			var errorCode = error.code;
+  			var errorMessage = error.message;
+  			// ...
+			});
+			window.location.replace('./index.html');
+  		}
+		</script>
+ 		<script>
+  		$( function() {
+   			$( "#draggable" ).draggable();
+   			$( "#draggable" ).draggable({
+  				containment: "parent"
+			});
+  		} );
+  </script>
+	</head>
+	<body onload='pageEffect()'>
+		<div class="remodal" data-remodal-id="modal">
+  <button data-remodal-action="close" class="remodal-close"></button>
+  <h1>Dialog</h1>
+  <p>
+    Dialoggy stuff in here!
+  </p>
+  <br>
+  <button data-remodal-action="cancel" class="remodal-cancel">Cancel</button>
+  <button data-remodal-action="confirm" class="remodal-external-link">Okay</button>
+</div>
+		<div class='header'>
+			<a href='#'><div class='headertext1'>unum<div class='headertext2'>dashboard</div></div></a>
+		</div>
+		<!--<a onclick='comingSoon()' href='#modal'>lol</a>-->
+		<div class='content'>
+
+			<center><div class='auth-title'>Authenticate</div></center><br><br><br><br><br><br><br><br>
+			<div><div style='position: absolute; left: 35%; top: 295px;' class='auth-text'>email:</div><center><input id='email' type='text' placeholder='john.doe@example.com' class='ax-editorview-input'></input></center></div>
+			<br>
+			<div><div style='position: absolute; left: 35%; top: 350px;' class='auth-text'>passcode:</div><center><input id='password' type='password' class='ax-editorview-input'></input></center></div>
+			<button onclick='login()' style='position: absolute;top: 55%;left: 50%;transform: translateX(-50%) translateY(-45%);' class="remodal-external-link">Login</button>
+			<img style='position: fixed; bottom: 0px; right: 0px; width: 256; height: 128;' src='img/poweredbycarbon.png' />
+		</div>
+		<script src="./dist/remodal.min.js"></script>
+	</body>
+</html>
